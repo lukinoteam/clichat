@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <sstream>
 
 class Logger{
 public:
@@ -38,7 +39,7 @@ void Logger::logMessage(std::string nickName, std::string message){
     writeFile.open("chat.log", std::ios::app);
 
 
-    writeFile << getCurrentTime() << "\t"<< nickName << "\t\t\t" << message << std::endl;
+    writeFile << getCurrentTime() << "\t"<< nickName << "\t" << message << std::endl;
 
 
     writeFile.close();
@@ -50,8 +51,17 @@ void Logger::getMessage(){
 
     std::string line;
     while(getline(readFile, line)){
-        std::cout << line << std::endl;
+        std::istringstream stream(line);
+        std::string date;
+        std::string time;
+        std::string nickName;
+        std::string message;
+
+        stream >> date >> time >> nickName >> message;
+
+        std::cout << time.substr(3,7) << "\t" << nickName << ":\t" << message<< std::endl;
     }
 }
+
 
 
