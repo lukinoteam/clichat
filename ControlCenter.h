@@ -3,12 +3,10 @@ using namespace std;
 class ControlCenter
 {
 public:
-	ControlCenter() {
-
-	}
-	void addMessage(string str) {
-		message.push(str);
-	}
+	ControlCenter();
+	~ControlCenter();
+	void addMessage(string str);
+	string getMessage();
 private:
 	queue <string> message;
 };
