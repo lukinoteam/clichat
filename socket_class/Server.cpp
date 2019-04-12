@@ -4,10 +4,16 @@
 #include <winsock2.h>
 #include <WS2tcpip.h>
 #include "Server.h"
+#include <vector>
+#include "ClientHandler.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
+
+//MARK:- Private instance of Singleton Class
 Server *Server::instance = NULL;
+
+//MARK:- Private constructor to create server and listening socket
 Server::Server()
 {
   WSAStartup(MAKEWORD(2, 0), &this->WSAData);
@@ -17,6 +23,7 @@ Server::Server()
   this->serverAddr.sin_port = htons(5555);
   setRoomId();
 }
+//MARK:- Publicly access to instance
 Server *Server::getInstance()
 {
   if (instance == NULL)
@@ -26,6 +33,7 @@ Server *Server::getInstance()
   return instance;
 }
 
+//MARK:- Setter
 void Server::setRoomId()
 {
   char szHostName[255];
@@ -34,16 +42,29 @@ void Server::setRoomId()
   host_entry = gethostbyname(szHostName);
   roomId = inet_ntoa(*(struct in_addr *)*host_entry->h_addr_list);
 }
+
+//MARK:- Getter
 string Server::getRoomId()
 {
   return this->roomId;
 }
+
+vector<SOCKET> Server::getClients() {
+  return this->clients;
+}
+
+//MARK:- Start server
 void Server::start()
 {
+  //TO-DO: initiating socket
   bind(serverSocket, (SOCKADDR *)&serverAddr, sizeof(serverAddr));
+
+  //TO-DO: make socket listening
   listen(serverSocket, 0);
   cout << "Server started..." << endl;
 }
+
+//MARK:- Run after server started
 void Server::run()
 {
   SOCKET client;
@@ -54,15 +75,12 @@ void Server::run()
 
   while (true)
   {
+    //TO-DO: listen and accept new socket connection
     if ((client = accept(serverSocket, (SOCKADDR *)&clientAddr, &clientAddrSize)) != INVALID_SOCKET)
     {
-      cout << "Client connected!" << endl;
-      recv(client, buffer, sizeof(buffer), 0);
-      cout << "Client says: " << buffer << endl;
-      memset(buffer, 0, sizeof(buffer));
-
-      closesocket(client);
-      cout << "Client disconnected." << endl;
+      this->clients.push_back(client);
+      //TO-DO: create new socket handler to handle incoming socket
+      ClientHandler * handler = new ClientHandler(client, this->getInstance());
     }
   }
 }
