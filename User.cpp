@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "User.h"
-
+#include <fstream>
 
 User::User()
 {
@@ -12,7 +12,16 @@ void User::info() {
 
 }
 void User::mods() {
-
+	ifstream stream;
+	//Directory of mod_list
+	stream.open("");
+	string name;
+	cout << "List of mods : " << endl;
+	if (stream.is_open()) {
+		while (getline(stream, name)) {
+			cout << name << endl;
+		}
+	}
 }
 void User::nickname() {
 

@@ -1,9 +1,13 @@
 #include "stdafx.h"
 #include "Config.h"
-
-
+#include <fstream>
 Config::Config()
 {
+	//change the directory file
+	this->member_list = readFileList("D:/CPP Project/CliChat/CliChat/MemberList.txt");
+	this->ban_list = readFileList("D:/CPP Project/CliChat/CliChat/BanList.txt");
+	this->filter_list = readFileList("D:/CPP Project/CliChat/CliChat/FilterList.txt");
+	this->mod_list = readFileList("D:/CPP Project/CliChat/CliChat/ModList.txt");
 }
 
 Config::~Config()
@@ -56,4 +60,18 @@ void Config::setMemberList(vector<string> vec) {
 }
 vector<string> Config::getMemberList() {
 	return this->member_list;
+}
+//function readMember,Ban,Mod,Filter File
+vector<string>Config::readFileList(string str) {
+	vector<string>list;
+	ifstream stream;
+	stream.open(str);
+	string member;
+	if (stream.is_open()) {
+		while (getline(stream, member)) {
+			list.push_back(member);
+	}
+		stream.close();
+	}
+	return list;
 }

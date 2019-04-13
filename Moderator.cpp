@@ -23,6 +23,5 @@ void Moderator::unFilter(string word) {
 
 }
 void Moderator::privateMessage() {
-
 }
 
