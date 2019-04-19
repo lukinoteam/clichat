@@ -15,6 +15,15 @@ using namespace std;
 void threadOnNewSocket(void *data);
 char* stringToCharArray(string str);
 int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET clientSocket, void *data);
+
+string CLIENT_LIST_PATH = "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/ClientList.txt";
+string MOD_LIST_PATH = "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/ModList.txt";
+string BAN_LIST_PATH = "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/BanList.txt";
+string FILTER_KEY_PATH = "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/FilterKeywords.txt";
+string FILTER_REP_PATH = "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/FilterReplaced.txt";
+string TEMP_PATH = "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp.txt";
+
+
 //MARK:- Constructor
 ClientHandler::ClientHandler(SOCKET clientSocket, Server *server)
 {
@@ -91,8 +100,8 @@ void threadOnNewSocket(void *data)
         int namePos = str.find(':');
         string key = str.substr(namePos + 2, str.length());
         FileHandle* fileHandle = new FileHandle();
-        if (fileHandle->isExistData(key, "FilterKeywords.txt") == 1){
-            string data = fileHandle->replaceData(key, "FilterKeywords.txt", "FilterReplaced.txt");
+        if (fileHandle->isExistData(key, FILTER_KEY_PATH) == 1){
+            string data = fileHandle->replaceData(key, FILTER_KEY_PATH, FILTER_REP_PATH);
             string message = str.substr(0, namePos) + ": " + data;
             broadcast(FileHandle::getCurrentTime(), stringToCharArray(message), clients);
             continue;
@@ -118,10 +127,10 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
         string clientRole = str.substr(12, 3);
         string clientName = str.substr(16, str.length());
 
-        if (fileHandle->isExistData(clientName, "BanList.txt") == 1){
+        if (fileHandle->isExistData(clientName, BAN_LIST_PATH) == 1){
 
         }
-        fileHandle->addData(clientRole + ":" + clientName, "ClientList.txt");
+        fileHandle->addData(clientRole + ":" + clientName, CLIENT_LIST_PATH);
 
         string notice = clientName + " have joined.";
 
@@ -159,10 +168,10 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
     if (str.substr(0, 9).compare("ban_name:") == 0){
         string banName = str.substr(9, str.length());
         string notice = banName + " has been banned!";
-        fileHandle->addData("BAN:" + banName, "ClientList.txt");
-        fileHandle->addData(banName, "BanList.txt");
-        fileHandle->removeData("MEM:" + banName, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/ClientList.txt" , "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp.txt");
-        fileHandle->removeData("MOD:" + banName, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/ClientList.txt" , "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp.txt");
+        fileHandle->addData("BAN:" + banName, CLIENT_LIST_PATH);
+        fileHandle->addData(banName, BAN_LIST_PATH);
+        fileHandle->removeData("MEM:" + banName, CLIENT_LIST_PATH , stringToCharArray(TEMP_PATH));
+        fileHandle->removeData("MOD:" + banName, CLIENT_LIST_PATH , stringToCharArray(TEMP_PATH));
 
         broadcast(FileHandle::getCurrentTime(), stringToCharArray(notice), clients);
         memset(buffer, 0, sizeof(buffer));
@@ -179,9 +188,9 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
     if (str.substr(0, 11).compare("unban_name:") == 0){
         string unbanName = str.substr(11, str.length());
         string notice = unbanName + " has been unbanned!";
-        fileHandle->removeData("BAN:" + unbanName, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/ClientList.txt" , "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp.txt");
-        fileHandle->addData("MEM:" + unbanName, "ClientList.txt");
-        fileHandle->removeData(unbanName, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/BanList.txt" , "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp.txt");
+        fileHandle->removeData("BAN:" + unbanName, CLIENT_LIST_PATH , stringToCharArray(TEMP_PATH));
+        fileHandle->addData("MEM:" + unbanName, CLIENT_LIST_PATH);
+        fileHandle->removeData(unbanName, BAN_LIST_PATH , stringToCharArray(TEMP_PATH));
 
         broadcast(FileHandle::getCurrentTime(), stringToCharArray(notice), clients);
         memset(buffer, 0, sizeof(buffer));
@@ -199,9 +208,9 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
         string modName = str.substr(9, str.length());
         string notice = modName + " has been set to mod!";
 
-        fileHandle->addData("MOD:" + modName, "ClientList.txt");
-        fileHandle->removeData("MEM:" + modName, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/ClientList.txt" , "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp.txt");
-        fileHandle->addData(modName, "ModList.txt");
+        fileHandle->addData("MOD:" + modName, CLIENT_LIST_PATH);
+        fileHandle->removeData("MEM:" + modName, CLIENT_LIST_PATH , stringToCharArray(TEMP_PATH));
+        fileHandle->addData(modName, MOD_LIST_PATH);
 
         broadcast(FileHandle::getCurrentTime(), stringToCharArray(notice), clients);
         memset(buffer, 0, sizeof(buffer));
@@ -219,9 +228,9 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
         string unmodName = str.substr(11, str.length());
         string notice = unmodName + " has been set to member!";
 
-        fileHandle->addData("MEM:" + unmodName, "ClientList.txt");
-        fileHandle->removeData("MOD:" + unmodName, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/CLientList.txt" , "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp.txt");
-        fileHandle->removeData(unmodName, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/ModList.txt","C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp");
+        fileHandle->addData("MEM:" + unmodName, CLIENT_LIST_PATH);
+        fileHandle->removeData("MOD:" + unmodName, CLIENT_LIST_PATH , stringToCharArray(TEMP_PATH));
+        fileHandle->removeData(unmodName, MOD_LIST_PATH, stringToCharArray(TEMP_PATH));
 
         broadcast(FileHandle::getCurrentTime(), stringToCharArray(notice), clients);
         memset(buffer, 0, sizeof(buffer));
@@ -252,7 +261,7 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
 
     // Handle: Client request mods list
     if (str.substr(0, 9).compare("get_mods:") == 0){
-        string mods = "send_mods:\n" + fileHandle->showData("ModList.txt");
+        string mods = "send_mods:\n" + fileHandle->showData(MOD_LIST_PATH);
         memset(buffer, 0, sizeof(buffer));
         buffer = stringToCharArray(mods);
         send(clientSocket, buffer, sizeof(&buffer) * strlen(buffer), 0);
@@ -300,8 +309,8 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
 
         string filterRep = str.substr(11, str.length());
 
-        fileHandle->addData(filterKey, "FilterKeywords.txt");
-        fileHandle->addData(filterRep, "FilterReplaced.txt");
+        fileHandle->addData(filterKey, FILTER_KEY_PATH);
+        fileHandle->addData(filterRep, FILTER_REP_PATH);
 
 
         string notice = "Added filter keyword: " + filterKey + " : " + filterRep;
@@ -314,10 +323,10 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
     // Handle: Remove filter keyword
     if (str.substr(0, 13).compare("unfilter_key:") == 0){
         string filterKey = str.substr(13, str.length());
-        string replaceKey = fileHandle->replaceData(filterKey, "FilterKeywords.txt", "FilterReplaced.txt");
+        string replaceKey = fileHandle->replaceData(filterKey, FILTER_KEY_PATH, FILTER_REP_PATH);
 
-        fileHandle->removeData(filterKey, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/FilterKeywords.txt","C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp");
-        fileHandle->removeData(replaceKey, "C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/FilterReplaced.txt","C:/Users/lukin/OneDrive/Documents/Cpp/Clichat/bin/Debug/temp");
+        fileHandle->removeData(filterKey, FILTER_KEY_PATH, stringToCharArray(TEMP_PATH));
+        fileHandle->removeData(replaceKey, FILTER_REP_PATH, stringToCharArray(TEMP_PATH));
 
         string notice = "Remove filter keyword: " + filterKey + " : " + replaceKey;
         broadcast(FileHandle::getCurrentTime(), stringToCharArray(notice), clients);
@@ -328,7 +337,7 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
 
     // Handle: Client request filter keywords list
     if (str.substr(0, 12).compare("get_filters:") == 0){
-        string filters = "send_filters:\n" + fileHandle->showFilterData("FilterKeywords.txt", "FilterReplaced.txt");
+        string filters = "send_filters:\n" + fileHandle->showFilterData(FILTER_KEY_PATH, FILTER_REP_PATH);
         memset(buffer, 0, sizeof(buffer));
         buffer = stringToCharArray(filters);
         send(clientSocket, buffer, sizeof(&buffer) * strlen(buffer), 0);
@@ -337,7 +346,7 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
     }
     // Handle: Client request member list
     if (str.substr(0, 11).compare("get_report:") == 0){
-        string report = "send_report:\n" + fileHandle->showData("ClientList.txt");
+        string report = "send_report:\n" + fileHandle->showData(CLIENT_LIST_PATH);
         memset(buffer, 0, sizeof(buffer));
         buffer = stringToCharArray(report);
         send(clientSocket, buffer, sizeof(&buffer) * strlen(buffer), 0);
