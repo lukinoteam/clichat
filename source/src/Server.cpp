@@ -20,7 +20,7 @@ Server::Server()
   this->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
   this->serverAddr.sin_addr.s_addr = INADDR_ANY;
   this->serverAddr.sin_family = AF_INET;
-  this->serverAddr.sin_port = htons(5555);
+  this->serverAddr.sin_port = htons(8080);
   setRoomId();
 
 

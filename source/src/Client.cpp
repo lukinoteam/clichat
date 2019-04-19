@@ -22,7 +22,7 @@ void Client::connectToServer(string serverIp)
     const char *ip = serverIp.c_str();
     this->clientAddr.sin_addr.s_addr = inet_addr(ip);
     this->clientAddr.sin_family = AF_INET;
-    this->clientAddr.sin_port = htons(5555);
+    this->clientAddr.sin_port = htons(8080);
     connect(serverSocket, (SOCKADDR *)&clientAddr, sizeof(clientAddr));
 }
 

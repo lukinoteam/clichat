@@ -207,7 +207,12 @@ void Texter::messageHandle(string message){
     }
 
     else if (message.substr(0,1).compare("@") == 0){
-        sendToServer("@" + client->getName() + ":" + message.substr(1, message.length()));
+        if (client->getRole() ==  ADM || client->getRole() ==  MOD){
+            sendToServer("@" + client->getName() + ":" + message.substr(1, message.length()));
+        }
+        else {
+            cout << "Private message is available for Admin and Mod only." << endl;
+        }
     }
 
     else {

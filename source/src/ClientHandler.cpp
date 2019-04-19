@@ -251,7 +251,7 @@ int bufferHandle(string str, char* buffer, vector<SOCKET> clients, SOCKET client
     }
 
     // Handle: Client request mods list
-    if (str.substr(0, 8).compare("get_mods:") == 0){
+    if (str.substr(0, 9).compare("get_mods:") == 0){
         string mods = "send_mods:\n" + fileHandle->showData("ModList.txt");
         memset(buffer, 0, sizeof(buffer));
         buffer = stringToCharArray(mods);
