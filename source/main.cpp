@@ -46,10 +46,12 @@ int main(int argc, char const *argv[])
                     cout << "Input rule: ";
                     getline(cin, rule);
 
-
+                    string ip;
+                    cout << "Input ip: ";
+                    getline(cin, ip);
 
                     thread serverThread(runServer, name, rule);
-                    thread clientThread(runClient, name, ADM, "127.0.0.1");
+                    thread clientThread(runClient, name, ADM, ip);
 
                     if (serverThread.joinable()){
                         serverThread.join();
